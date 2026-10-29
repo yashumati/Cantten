@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Campus Canteen</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f4f6f9; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h1 { color: #333; font-size: 22px; }
+        .back-btn { text-decoration: none; background: #6c757d; color: white; padding: 8px 15px; border-radius: 5px; font-size: 14px; font-weight: 500; }
+        .back-btn:hover { background: #5a6268; }
+
+        .orders-container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .order-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #007bff; }
+        .order-info h3 { font-size: 16px; color: #333; margin-bottom: 5px; }
+        .order-info p { font-size: 14px; color: #666; margin-bottom: 4px; }
+        .order-info .price { font-weight: bold; color: #28a745; font-size: 15px; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; display: inline-block; }
+        .badge-pending { background: #ffeeba; color: #856404; }
+        .badge-preparing { background: #b8daff; color: #004085; }
+        .badge-ready { background: #c3e6cb; color: #155724; }
+        .badge-completed { background: #e2e3e5; color: #383d41; }
+
+        .no-orders { text-align: center; padding: 40px; background: #fff; border-radius: 10px; color: #776; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🛍️ My Order History & Live Status</h1>
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+    </header>
+
+    <div class="orders-container" id="my-orders-list">
+        <!-- Dynamic Orders Will Load Here -->
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/api/orders';
+
+        async function fetchMyOrders() {
+            const studentName = localStorage.getItem("userName");
+            const isLoggedIn = localStorage.getItem("isLoggedIn");
+            const container = document.getElementById('my-orders-list');
+
+            if (!container) return;
+
+            if (!isLoggedIn || isLoggedIn !== "true" || !studentName) {
+                container.innerHTML = `<div class="no-orders">🔒 Aadhi login karayla lagel order baghnyasathi!</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Server error");
+                const orders = await response.json();
+
+                // Case-insensitive filtering to ensure precise matching
+                const myOrders = orders.filter(order => 
+                    order.customerName && order.customerName.toLowerCase().trim() === studentName.toLowerCase().trim()
+                );
+
+                if (myOrders.length === 0) {
+                    container.innerHTML = `<div class="no-orders">📦 Tumhi ajun kontihi order keli nahiye!</div>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                myOrders.reverse().forEach(order => { 
+                    const itemsText = Array.isArray(order.items) ? order.items.join(', ') : order.items;
+                    const statusClass = `badge-${order.status ? order.status.toLowerCase() : 'pending'}`;
+
+                    const card = document.createElement('div');
+                    card.className = 'order-card';
+                    
+                    if (order.status === 'READY') card.style.borderLeftColor = '#28a745';
+                    else if (order.status === 'PREPARING') card.style.borderLeftColor = '#17a2b8';
+                    else if (order.status === 'COMPLETED') card.style.borderLeftColor = '#6c757d';
+
+                    card.innerHTML = `
+                        <div class="order-info">
+                            <h3>Order #${order.id}</h3>
+                            <p>🍔 <strong>Items:</strong> ${itemsText}</p>
+                            <p>💳 <strong>Payment:</strong> ${order.paymentMethod || 'Cash on Counter'}</p>
+                            <p class="price">Total: ₹${order.total}</p>
+                        </div>
+                        <div>
+                            <span class="status-badge ${statusClass}">${order.status || 'PENDING'}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Orders load error:", error);
+                container.innerHTML = `<div class="no-orders">⚠️ Server (Port 8081) sobat connect hot nahiye!</div>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMyOrders();
+            setInterval(fetchMyOrders, 5000);
+        });
+        
+    async function fetchMyOrders() {
+    
+    let studentName = localStorage.getItem("userName") || "student";
+    let isLoggedIn = localStorage.getItem("isLoggedIn") || "true";
+
+    const container = document.getElementById('my-orders-list');
+    if (!container) return;
+
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Server error");
+        const orders = await response.json();
+
+        // Orders filter karne
+        const myOrders = orders.filter(order => 
+            order.customerName && order.customerName.toLowerCase().trim() === studentName.toLowerCase().trim()
+        );
+
+        if (myOrders.length === 0) {
+            container.innerHTML = `<div class="no-orders">📦 Tumhi ajun kontihi order keli nahiye! (User: ${studentName})</div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        myOrders.reverse().forEach(order => { 
+            const itemsText = Array.isArray(order.items) ? order.items.join(', ') : order.items;
+            const statusClass = `badge-${order.status ? order.status.toLowerCase() : 'pending'}`;
+
+            const card = document.createElement('div');
+            card.className = 'order-card';
+            
+            card.innerHTML = `
+                <div class="order-info">
+                    <h3>Order #${order.id}</h3>
+                    <p>🍔 <strong>Items:</strong> ${itemsText}</p>
+                    <p>💳 <strong>Payment:</strong> ${order.paymentMethod || 'Cash on Counter'}</p>
+                    <p class="price">Total: ₹${order.total}</p>
+                </div>
+                <div>
+                    <span class="status-badge ${statusClass}">${order.status || 'PENDING'}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Orders load error:", error);
+        container.innerHTML = `<div class="no-orders">⚠️ Server (Port 8081) sobat connect hot nahiye!</div>`;
+    }
+}
+    </script>
+</body>
+</html>

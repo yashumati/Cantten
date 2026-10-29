@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Canteen - Smart Ordering System</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS Link -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <span>🍔</span> Campus Canteen
+        </div>
+        <nav>
+            <button class="nav-tab active" onclick="switchView('all')">All Items</button>
+            
+            
+            <!-- BOLD DROPDOWN MENU -->
+            <div class="dropdown">
+                <button class="dropdown-btn"><b>MENU ▾</b></button>
+                <div class="dropdown-content">
+                  <a href="#" onclick="filterCategory('Breakfast')">Breakfast</a>
+
+<a href="#" onclick="filterCategory('Beverages')">Beverages</a>
+
+<a href="#" onclick="filterCategory('Veg')">Pure Veg</a>
+
+<a href="#" onclick="filterCategory('Non-Veg')">Non-Veg</a>
+
+<a href="#" onclick="filterCategory('All')">All Items</a>
+                </div>
+            </div>
+
+<a href="#" id="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
+
+            <a href="javascript:void(0)" onclick="openLoginModal()" class="login-nav-btn">Login / Register</a>
+            <a href="order.html">My Orders</a>
+        </nav>
+    </header>
+
+    <!-- Hero Banner Section -->
+    <div class="hero">
+        <h1 id="category-heading">College Smart Canteen</h1>
+        <p id="category-subheading">Select a section from menu or navigate using tabs above!</p>
+    </div>
+
+    <!-- Main Dynamic Content Container -->
+    <div class="container">
+        
+        <!-- SECTION 1: BREAKFAST (6 Items) -->
+        <section id="breakfast" class="app-view active-view">
+            <h2 class="section-title">☕ Breakfast Specials</h2>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500" alt="Samosa">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Crispy Samosa</h3>
+                        <p class="price">₹20</p>
+                        <button class="btn-add" onclick="addToCart('Crispy Samosa', 20)">Add to Cart</button>
+                    </div>
+                </div>
+               <div class="menu-card">
+    <img src="images/vada-pav.jpg" alt="Vada Pav">
+    <div class="card-body">
+        <span class="badge veg">Veg</span>
+        <h3>Mumbai Vada Pav</h3>
+        <p class="price">₹15</p>
+        <button class="btn-add" onclick="addToCart('Mumbai Vada Pav', 15)">Add to Cart</button>
+    </div>
+</div>
+                <div class="menu-card">
+                    <img src="images/kanda-poha.jpg" alt="Poha">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Kanda Poha</h3>
+                        <p class="price">₹25</p>
+                        <button class="btn-add" onclick="addToCart('Kanda Poha', 25)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=500" alt="Idli Sambhar">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Idli Sambhar (2 pcs)</h3>
+                        <p class="price">₹35</p>
+                        <button class="btn-add" onclick="addToCart('Idli Sambhar', 35)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=500" alt="Masala Dosa">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Butter Masala Dosa</h3>
+                        <p class="price">₹50</p>
+                        <button class="btn-add" onclick="addToCart('Butter Masala Dosa', 50)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/rava-upma.jpg" alt="Upma">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Rava Upma</h3>
+                        <p class="price">₹30</p>
+                        <button class="btn-add" onclick="addToCart('Rava Upma', 30)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: BEVERAGES (6 Items) -->
+        <section id="beverages" class="app-view active-view">
+            <h2 class="section-title">🥤 Cool & Hot Beverages</h2>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500" alt="Cold Coffee">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Cold Coffee</h3>
+                        <p class="price">₹30</p>
+                        <button class="btn-add" onclick="addToCart('Cold Coffee', 30)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/tea.jpg" alt="Masala Chai">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Hot Masala Chai</h3>
+                        <p class="price">₹15</p>
+                        <button class="btn-add" onclick="addToCart('Hot Masala Chai', 15)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500" alt="Fresh Lime Soda">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Fresh Lime Soda</h3>
+                        <p class="price">₹25</p>
+                        <button class="btn-add" onclick="addToCart('Fresh Lime Soda', 25)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500" alt="Chocolate Shake">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Thick Chocolate Shake</h3>
+                        <p class="price">₹50</p>
+                        <button class="btn-add" onclick="addToCart('Chocolate Shake', 50)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/sweet-mango-lassi.jpg" alt="Mango Lassi">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Sweet Mango Lassi</h3>
+                        <p class="price">₹40</p>
+                        <button class="btn-add" onclick="addToCart('Mango Lassi', 40)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/green-tea.jpg" alt="Green Tea">
+                    <div class="card-body">
+                        <span class="badge bev">Beverage</span>
+                        <h3>Organic Green Tea</h3>
+                        <p class="price">₹20</p>
+                        <button class="btn-add" onclick="addToCart('Organic Green Tea', 20)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PURE VEG (6 Items) -->
+        <section id="veg" class="app-view active-view">
+            <h2 class="section-title">🥗 Pure Veg Main Course</h2>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <img src="images/panner-masala-thali.jpg" alt="Paneer Thali">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Paneer Butter Masala Thali</h3>
+                        <p class="price">₹120</p>
+                        <button class="btn-add" onclick="addToCart('Paneer Thali', 120)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/veg-dum-biryani.jpg" alt="Veg Biryani">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Veg Dum Biryani</h3>
+                        <p class="price">₹100</p>
+                        <button class="btn-add" onclick="addToCart('Veg Dum Biryani', 100)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/dal-makhani-rice.jpg" alt="Dal Makhani">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Dal Makhani Rice Combo</h3>
+                        <p class="price">₹90</p>
+                        <button class="btn-add" onclick="addToCart('Dal Makhani Combo', 90)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/veg-chees=pizza.jpg" alt="Cheese Pizza">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Veg Cheese Pizza</h3>
+                        <p class="price">₹90</p>
+                        <button class="btn-add" onclick="addToCart('Veg Cheese Pizza', 90)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=500" alt="Pav Bhaji">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Butter Pav Bhaji</h3>
+                        <p class="price">₹70</p>
+                        <button class="btn-add" onclick="addToCart('Butter Pav Bhaji', 70)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/kolhapuri-misal.jpg" alt="Misal Pav">
+                    <div class="card-body">
+                        <span class="badge veg">Veg</span>
+                        <h3>Kolhapuri Misal Pav</h3>
+                        <p class="price">₹60</p>
+                        <button class="btn-add" onclick="addToCart('Misal Pav', 60)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: NON-VEG (6 Items) -->
+        <section id="nonveg" class="app-view active-view">
+            <h2 class="section-title">🍗 Non-Veg Specials</h2>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <img src="images/chicken-dum-biryani.jpg" alt="Chicken Biryani">
+                    <div class="card-body">
+                        <span class="badge nonveg">Non-Veg</span>
+                        <h3>Chicken Dum Biryani</h3>
+                        <p class="price">₹140</p>
+                        <button class="btn-add" onclick="addToCart('Chicken Dum Biryani', 140)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/butter-chiken-roti.jpg" alt="Butter Chicken">
+                    <div class="card-body">
+                        <span class="badge nonveg">Non-Veg</span>
+                        <h3>Butter Chicken + Roti Combo</h3>
+                        <p class="price">₹160</p>
+                        <button class="btn-add" onclick="addToCart('Butter Chicken Combo', 160)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/egg-rice-thali.jpg" alt="Egg Curry">
+                    <div class="card-body">
+                        <span class="badge nonveg">Egg</span>
+                        <h3>Egg Curry Rice Thali</h3>
+                        <p class="price">₹90</p>
+                        <button class="btn-add" onclick="addToCart('Egg Curry Thali', 90)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/crispy-chiken-roll.jpg" alt="Chicken Roll">
+                    <div class="card-body">
+                        <span class="badge nonveg">Non-Veg</span>
+                        <h3>Crispy Chicken Roll</h3>
+                        <p class="price">₹80</p>
+                        <button class="btn-add" onclick="addToCart('Chicken Roll', 80)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/chiken-popcorn.jpg" alt="Chicken Popcorn">
+                    <div class="card-body">
+                        <span class="badge nonveg">Non-Veg</span>
+                        <h3>Crunchy Chicken Popcorn</h3>
+                        <p class="price">₹110</p>
+                        <button class="btn-add" onclick="addToCart('Chicken Popcorn', 110)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="menu-card">
+                    <img src="images/chiken-shwarama.jpg" alt="Chicken Shawarma">
+                    <div class="card-body">
+                        <span class="badge nonveg">Non-Veg</span>
+                        <h3>Cheese Chicken Shawarma</h3>
+                        <p class="price">₹95</p>
+                        <button class="btn-add" onclick="addToCart('Chicken Shawarma', 95)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+    <div style="background: white; padding: 30px; border-radius: 10px; width: 350px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: #333;">Student Login</h3>
+            <span onclick="closeLoginModal()" style="cursor: pointer; font-size: 20px; font-weight: bold; color: #666;">&times;</span>
+        </div>
+        
+        <form onsubmit="handleAuth(event)">
+            <div style="margin-bottom: 15px; text-align: left;">
+                <label style="display: block; font-size: 14px; color: #555; margin-bottom: 5px;">College Email</label>
+                <!-- 👉 He ID 'login-email' asne sarvat mahatvache ahe -->
+                <input type="email" id="login-email" placeholder="Enter your email" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            </div>
+
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; font-size: 14px; color: #555; margin-bottom: 5px;">Password</label>
+                <input type="password" placeholder="Enter password" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            </div>
+
+            <button type="submit" style="width: 100%; background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold;">Login</button>
+        </form>
+    </div>
+</div>
+    <!-- FOOTER SECTION -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>Campus Canteen</h2>
+                <p>Fresh & Healthy Food Every Day</p>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Quick Navigation</h3>
+                
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="switchView('all')">All Items</a></li>
+                    <li><a href="javascript:void(0)" onclick="openLoginModal('login-nav-btn')"></a>Login / Register</a></li>
+                    <li><a href="order.html">My Orders</a></li>
+                    
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Contacts</h3>
+                <p>📞 +91 98765 43210</p>
+                <p>📧 canteen.support@college.edu</p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Address</h3>
+                <p>Campus Food Court, Block B,</p>
+                <p>dr.d.y.patil.tehnical Campus,</p>
+                <p>Pune, Maharashtra - 411001</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Campus Canteen System. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <div id="toast">Item added to cart!</div>
+        
+    <div id="menu-container"></div>
+    <script src="script.js"></script>
+
+<div id="cart-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+  <div style="background: white; padding: 20px; border-radius: 10px; width: 350px; text-align: center; position: relative;">
+    <h2>🛒 Your Cart</h2>
+    <div id="cart-items" style="max-height: 200px; overflow-y: auto; margin: 15px 0; text-align: left;"></div>
+    <h3>Total: ₹<span id="cart-total">0</span></h3>
+    <button onclick="openPaymentModal()" style="width: 100%; background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">Proceed to Pay</button>
+    <button onclick="closeCart()" style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Close</button>
+  </div>
+</div>
+<!-- Payment Option Modal Box (Clean & Unbreakable Icons) -->
+<div id="payment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: #fff; width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: left;">
+        
+        <h3 style="margin-bottom: 15px; color: #333; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 8px;">Select Payment Method</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            
+            <!-- PhonePe -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: #5f259f; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">Pe</div>
+                    <span style="font-weight: 500; color: #333;">PhonePe</span>
+                </div>
+                <input type="radio" name="paymentOption" value="PhonePe" checked>
+            </label>
+
+            <!-- Google Pay -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: #fff; border: 1px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4285F4; font-weight: bold; font-size: 16px;">G</div>
+                    <span style="font-weight: 500; color: #333;">Google Pay</span>
+                </div>
+                <input type="radio" name="paymentOption" value="Google Pay">
+            </label>
+
+            <!-- Paytm -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: #00b9f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">Paytm</div>
+                    <span style="font-weight: 500; color: #333;">Paytm / UPI ID</span>
+                </div>
+                <input type="radio" name="paymentOption" value="Paytm/UPI">
+            </label>
+
+            <!-- Cash on Counter -->
+            <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; background: #e6f4ea; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">💵</div>
+                    <span style="font-weight: 500; color: #333;">Pay at Counter (Cash)</span>
+                </div>
+                <input type="radio" name="paymentOption" value="Cash on Counter">
+            </label>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="confirmAndPlaceOrder()" style="flex: 1; background: #28a745; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Confirm & Pay</button>
+            <button onclick="closePaymentModal()" style="flex: 1; background: #6c757d; color: white; border: none; padding: 11px; border-radius: 6px; cursor: pointer; font-size: 14px;">Cancel</button>
+        </div>
+
+    </div>
+</div>
+<!-- My Orders Modal Popup -->
+
+<div id="toast" class="toast"></div>
+<script src="script.js"></script>
+<!-- Login Modal -->
+<div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+    <div style="background: white; padding: 25px; border-radius: 8px; width: 320px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <h3>Student Login</h3>
+        <form onsubmit="handleAuth(event)">
+            <input type="email" id="login-email" placeholder="Enter college email" required style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="password" placeholder="Enter password" required style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;">
+            <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;">Login</button>
+        </form>
+        <button onclick="closeLoginModal()" style="background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; margin-top: 10px; cursor: pointer;">Close</button>
+    </div>
+</div>
+<!-- Toast Message Box -->
+<div id="toast" style="visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 12px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); transition: visibility 0.5s, opacity 0.5s;"></div>
+<!-- Student Ready Alert Sound Element -->
+<audio id="readyAlertSound" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+<!-- Breakfast Section -->
+</div>
+</body>
+</html>

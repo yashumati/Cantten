@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canteen Admin Dashboard</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f4f6f9; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h1 { color: #333; font-size: 22px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #007bff; }
+        .stat-card h3 { font-size: 14px; color: #666; font-weight: normal; }
+        .stat-card p { font-size: 24px; font-weight: bold; color: #333; margin-top: 5px; }
+
+        .orders-table-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; padding: 20px; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #eef0f3; font-size: 14px; }
+        th { background-color: #f8f9fa; color: #495057; font-weight: 600; }
+        tr:hover { background-color: #f8f9fa; }
+
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .badge-pending { background: #ffeeba; color: #856404; }
+        .badge-preparing { background: #b8daff; color: #004085; }
+        .badge-ready { background: #c3e6cb; color: #155724; }
+        .badge-completed { background: #e2e3e5; color: #383d41; }
+
+        select.status-select { padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; cursor: pointer; outline: none; }
+        button.btn-refresh { padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; }
+        button.btn-refresh:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎓 College Canteen - Admin Dashboard</h1>
+        <button class="btn-refresh" onclick="loadAllData()">🔄 Refresh Data</button>
+    </header>
+
+    <!-- Sound Alert Enable Button -->
+    <div style="padding: 10px; background: #fff; margin-bottom: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <button onclick="enableSound()" style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">🔔 Enable Sound Alerts</button>
+        <span style="margin-left: 10px; font-size: 14px; color: #555;">(Sound chalu karnyasaathi fkt ekda ya button var click kara)</span>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats">
+        <div class="stat-card" style="border-left-color: #ffc107;">
+            <h3>Pending Orders</h3>
+            <p id="pending-count">0</p>
+        </div>
+        <div class="stat-card" style="border-left-color: #17a2b8;">
+            <h3>Preparing</h3>
+            <p id="preparing-count">0</p>
+        </div>
+        <div class="stat-card" style="border-left-color: #28a745;">
+            <h3>Ready for Pickup</h3>
+            <p id="ready-count">0</p>
+        </div>
+        <div class="stat-card" style="border-left-color: #6c757d;">
+            <h3>Total Orders</h3>
+            <p id="total-count">0</p>
+        </div>
+    </div>
+
+    <!-- Live Orders Section -->
+    <div class="orders-table-container">
+        <h2>Live Incoming Orders</h2>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Items</th>
+                    <th>Total Amount</th>
+                    <th>Payment</th>
+                    <th>Current Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list">
+                <!-- Orders will load dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Menu Inventory Management Section -->
+    <div class="orders-table-container">
+        <h2>🍔 Menu Inventory Management (Available / Not Available)</h2>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="menu-inventory-list">
+                <!-- Menu items will load dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add New Food Item Form -->
+    <div class="orders-table-container" style="background: #f9f9f9; padding: 15px; margin-bottom: 20px;">
+        <h3>➕ Add New Food Item to Database</h3>
+        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+            <input type="text" id="newName" placeholder="Item Name (e.g. Cold Coffee)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+            <input type="number" id="newPrice" placeholder="Price (e.g. 40)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 120px;">
+            <input type="text" id="newCategory" placeholder="Category (e.g. Beverages)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+            <button onclick="addNewFoodItem()" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Add Item</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/api/orders';
+        const FOOD_API_URL = 'http://localhost:8081/api/food';
+        let lastOrderCount = 0;
+
+        // 1. Security Check (Password Prompt)
+        document.addEventListener('DOMContentLoaded', () => {
+            const SECRET_ADMIN_PASSWORD = "......"; // 👉 Tuza secure password ithe thev
+            let enteredPassword = prompt("🔐 Admin Dashboard secure ahe. Password taka:");
+
+            if (enteredPassword !== SECRET_ADMIN_PASSWORD) {
+                alert("⚠️ Chukaicha password! Tumhala access nahi.");
+                window.location.href = "index.html"; 
+                return;
+            }
+
+            // Request Browser Notifications permission
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+
+            loadAllData();
+            // Auto refresh orders every 4 seconds
+            setInterval(fetchOrders, 4000);
+        });
+
+        function loadAllData() {
+            fetchOrders();
+            fetchMenuInventory();
+        }
+
+        // Web Audio API Beep Sound (100% Reliable, no external file errors)
+        function playBeepSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.6);
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        function enableSound() {
+            playBeepSound();
+            alert("✅ Sound notifications successfully enabled!");
+        }
+
+        // Fetch & Render Orders
+        async function fetchOrders() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Backend connection failed");
+                const orders = await response.json();
+
+                // Check for new orders notification & sound
+                if (lastOrderCount > 0 && orders.length > lastOrderCount) {
+                    playBeepSound();
+                    if (Notification.permission === "granted") {
+                        new Notification("🚨 Navin Canteen Order Aali!", {
+                            body: "Ek navin order place zali ahe, dashboard var check kara!",
+                            icon: "https://cdn-icons-png.flaticon.com/512/3174/3174835.png"
+                        });
+                    }
+                }
+                lastOrderCount = orders.length;
+
+                renderTable(orders);
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            }
+        }
+
+        function renderMenuTable(items) {
+            const tbody = document.getElementById('menu-inventory-list');
+            tbody.innerHTML = '';
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${item.id}</strong></td>
+                    <td>${item.name}</td>
+                    <td>${item.category || 'General'}</td>
+                    <td>₹${item.price}</td>
+                    <td>
+                        <span class="status-badge" style="background: ${item.available ? '#c3e6cb' : '#f8d7da'}; color: ${item.available ? '#155724' : '#721c24'};">
+                            ${item.available ? 'AVAILABLE' : 'NOT AVAILABLE'}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="toggleItemAvailability(${item.id}, ${Boolean(item.available)})" 
+                            style="padding: 6px 12px; background: ${item.available ? '#dc3545' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                            ${item.available ? 'Mark Not Available' : 'Mark Available'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+           document.getElementById('pending-count').innerText = counts.PENDING;
+            document.getElementById('preparing-count').innerText = counts.PREPARING;
+            document.getElementById('ready-count').innerText = counts.READY;
+            document.getElementById('total-count').innerText = counts.TOTAL;
+        }
+
+        async function updateStatus(orderId, newStatus) {
+            try {
+                const response = await fetch(`${API_URL}/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    fetchOrders();
+                } else {
+                    alert("Status update fail zala!");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Fetch & Render Menu Inventory
+      async function fetchMenuInventory() {
+    try {
+        const response = await fetch(FOOD_API_URL);
+        if (!response.ok) throw new Error("Failed to load menu");
+        const menuItems = await response.json();
+        renderMenuTable(menuItems);
+    } catch (error) {
+        console.error("Error fetching menu:", error);
+    }
+}
+
+function renderMenuTable(items) {
+    const tbody = document.getElementById('menu-inventory-list');
+    tbody.innerHTML = '';
+
+    items.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>#${item.id}</strong></td>
+            <td>${item.name}</td>
+            <td>${item.category || 'General'}</td>
+            <td>₹${item.price}</td>
+            <td>
+                <span class="status-badge" style="background: ${item.available ? '#c3e6cb' : '#f8d7da'}; color: ${item.available ? '#155724' : '#721c24'};">
+                    ${item.available ? 'AVAILABLE' : 'NOT AVAILABLE'}
+                </span>
+            </td>
+            <td>
+                <button onclick="toggleItemAvailability(${item.id}, ${item.available})" 
+                    style="padding: 6px 12px; background: ${item.available ? '#dc3545' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                    ${item.available ? 'Mark Not Available' : 'Mark Available'}
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+function renderTable(orders) {
+    const tbody = document.getElementById('orders-list');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    let counts = { PENDING: 0, PREPARING: 0, READY: 0, TOTAL: orders.length };
+
+    orders.forEach(order => {
+        if (counts[order.status] !== undefined) counts[order.status]++;
+
+        const itemsText = Array.isArray(order.items) ? order.items.join(', ') : order.items;
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+            <td><strong>#${order.id}</strong></td>
+            <td>👤 ${order.customerName || 'Student'}</td>
+            <td>${itemsText}</td>
+            <td>₹${order.total}</td>
+            <td>💳 <strong>${order.paymentMethod || 'Cash on Counter'}</strong></td>
+            <td><span class="status-badge badge-${order.status ? order.status.toLowerCase() : 'pending'}">${order.status || 'PENDING'}</span></td>
+            <td>
+                <select class="status-select" onchange="updateStatus(${order.id}, this.value)">
+                    <option value="PENDING" ${order.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
+                    <option value="PREPARING" ${order.status === 'PREPARING' ? 'selected' : ''}>PREPARING</option>
+                    <option value="READY" ${order.status === 'READY' ? 'selected' : ''}>READY</option>
+                    <option value="COMPLETED" ${order.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
+                </select>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // He counts fkt orders sathi ahet
+    document.getElementById('pending-count').innerText = counts.PENDING;
+    document.getElementById('preparing-count').innerText = counts.PREPARING;
+    document.getElementById('ready-count').innerText = counts.READY;
+    document.getElementById('total-count').innerText = counts.TOTAL;
+}
+
+    async function toggleItemAvailability(id, currentStatus) {
+    const newStatus = !currentStatus;
+    console.log(`Updating Item #${id} to availability: ${newStatus}`);
+
+    try {
+        const response = await fetch(`http://localhost:8081/api/food/${id}/availability?available=${newStatus}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            console.log("Successfully updated on server!");
+            fetchMenuInventory(); // Table lages refresh hoil ani status badlel
+        } else {
+            const errText = await response.text();
+            console.error("Failed to update:", errText);
+            alert("Database var status update zala nahi!");
+        }
+    } catch (err) {
+        console.error("Network error:", err);
+        alert("Server connection error!");
+    }
+}
+
+        async function addNewFoodItem() {
+            const name = document.getElementById('newName').value;
+            const price = document.getElementById('newPrice').value;
+            const category = document.getElementById('newCategory').value;
+
+            if (!name || !price) {
+                alert("Please enter item name and price!");
+                return;
+            }
+
+            const newItem = {
+                name: name,
+                price: parseFloat(price),
+                category: category || "Snacks",
+                available: true
+            };
+
+            try {
+                const response = await fetch(FOOD_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newItem)
+                });
+
+                if (response.ok) {
+                    alert("Item added successfully!");
+                    document.getElementById('newName').value = '';
+                    document.getElementById('newPrice').value = '';
+                    document.getElementById('newCategory').value = '';
+                    fetchMenuInventory();
+                } else {
+                    alert("Failed to add item!");
+                }
+            } catch (err) {
+                console.error("Error adding item:", err);
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+    fetchOrders();
+    fetchMenuInventory(); // <--- He ahe ki nahi check kar!
+});
+        
+        async function fetchMenuInventory() {
+    try {
+        const response = await fetch('http://localhost:8081/api/food'); // Tuzya backend cha URL
+        if (!response.ok) throw new Error("Failed to load menu");
+        const menuItems = await response.json();
+        renderMenuTable(menuItems);
+    } catch (error) {
+        console.error("Error fetching menu:", error);
+    }
+}
+
+
+
+function filterCategory(categoryName) {
+    // Sagle category blocks/sections select karne
+    const categoryBlocks = document.querySelectorAll('.menu-category-block'); // Tumchya HTML madhla pratek categorycha parent div
+
+    categoryBlocks.forEach(block => {
+        const title = block.querySelector('h2, h3').innerText.toLowerCase();
+        
+        if (categoryName.toLowerCase() === 'all' || title.includes(categoryName.toLowerCase())) {
+            block.style.display = 'block'; // Hi category disel
+        } else {
+            block.style.display = 'none';  // Baakichya categories lapaun jaatil
+        }
+    });
+}
+    </script>
+</body>
+</html>
